@@ -11,7 +11,7 @@ import pprint
 import litellm
 
 
-def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini") -> str:
+def replace_identifying_info(document_path: str, model_type: str = GPT4_MINI) -> str:
     """
     Anonymizes a document by replacing all identifying information such as names, places, companies, etc., with alternative, non-identifying information.
     Replace names with other common names, places with other cities or regions, and companies with other generic or fictional company names.
@@ -33,22 +33,10 @@ def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini"
         mask_doc=utils.read_file(document_path)   # mask_doc is the langfuse prompt param for the document to be anonymized
     )
     # Extract the anonymized document from the response
-    if model_type not in TOGETHER_SUPPORTED_MODELS:  # supported by Litellm
-        response = litellm.completion(
-            model=model_type,
-            messages= compiled_prompt,
-        )
-    else:  # using Together client instead.
-        response = together_client.chat.completions.create(
-            model=TOGETHER_SUPPORTED_MODELS.get(model_type),
-            messages=compiled_prompt
-        )
-    anonymized_document = response.choices[0].message.content
-    return anonymized_document
+    return utils.get_chat_completion(model_type, compiled_prompt)
 
 if __name__ == "__main__":
     document = os.path.join(os.path.dirname(__file__), "samples", "example_letter.txt")
-
-    anonymized_document = replace_identifying_info(document, model_type=LLAMA3_70B_INSTRUCT_TURBO)
+    anonymized_document = replace_identifying_info(document, model_type=GPT4_MINI)
     print("*" * 50)
     print(anonymized_document)
