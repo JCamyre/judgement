@@ -59,29 +59,38 @@ PROMPT = [
     }
 ]
 
-def read_file(file_path):
+def read_file(file_path: str) -> str:
     with open(file_path, "r") as file:
         return file.read()
 
-def replace_identifying_info(document_path):
-    # Define the message for the GPT-4 model
+def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini") -> str:
+    """
+    Anonymizes a document by replacing all identifying information such as names, places, companies, etc., with alternative, non-identifying information.
+    Replace names with other common names, places with other cities or regions, and companies with other generic or fictional company names.
+
+    Args:
+        document_path (str): The path to the document to be anonymized.
+        model_type (str): The type of model to use for anonymization. Defaults to "gpt-4o-mini".
+    Returns:
+        str: The anonymized document.
+    """
+    if not os.path.exists(document_path):
+        raise FileNotFoundError(f"File not found at path: {document_path}")
+    
     messages = [
         {
             "role": "user",
             "content": read_file(document_path)
         }
     ]
-    pprint.pprint(messages)
-    # Create the completion request using the chat endpoint
+    # pprint.pprint(messages)  # observe the messages to be sent to the API as few shot examples
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=PROMPT + messages
     )
     
     # Extract the anonymized document from the response
-    # print(completion)
     anonymized_document = completion.choices[0].message.content
-    
     return anonymized_document
 
 if __name__ == "__main__":
