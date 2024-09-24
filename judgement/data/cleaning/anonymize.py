@@ -35,7 +35,7 @@ Anonymized Document:
     
     # Extract the anonymized document from the response
     print(completion)
-    anonymized_document = completion.choices[0].message
+    anonymized_document = completion.choices[0].message.content
     
     return anonymized_document
 
