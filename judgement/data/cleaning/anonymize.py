@@ -2,12 +2,13 @@
 Takes a document and anonymizes it by replacing all names with alternative names.
 """
 
-from judgement import langfuse, client, LiteLLMCompletion
+from judgement import *
 from judgement.data.cleaning import utils
 from judgement.prompt_names import *
 from judgement.constants import *
 import os
 import pprint
+import litellm
 
 
 def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini") -> str:
@@ -32,7 +33,7 @@ def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini"
         mask_doc=utils.read_file(document_path)   # mask_doc is the langfuse prompt param for the document to be anonymized
     )
     # Extract the anonymized document from the response
-    response = LiteLLMCompletion(
+    response = litellm.completion(
         model="gpt-4o-mini",
         messages= compiled_prompt,
     )
