@@ -34,7 +34,7 @@ def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini"
     )
     # Extract the anonymized document from the response
     response = litellm.completion(
-        model="gpt-4o-mini",
+        model=model_type,
         messages= compiled_prompt,
     )
     anonymized_document = response.choices[0].message.content
@@ -43,6 +43,6 @@ def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini"
 if __name__ == "__main__":
     document = os.path.join(os.path.dirname(__file__), "samples", "example_letter.txt")
 
-    anonymized_document = replace_identifying_info(document)
+    anonymized_document = replace_identifying_info(document, model_type=GPT4_MINI)
     print("*" * 50)
     print(anonymized_document)
