@@ -33,16 +33,22 @@ def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini"
         mask_doc=utils.read_file(document_path)   # mask_doc is the langfuse prompt param for the document to be anonymized
     )
     # Extract the anonymized document from the response
-    response = litellm.completion(
-        model=model_type,
-        messages= compiled_prompt,
-    )
+    if model_type != LLAMA_TURBO_70B:  # supported by Litellm
+        response = litellm.completion(
+            model=model_type,
+            messages= compiled_prompt,
+        )
+    else:  # using Together client instead.
+        response = together_client.chat.completions.create(
+            model=model_type,
+            messages=compiled_prompt
+        )
     anonymized_document = response.choices[0].message.content
     return anonymized_document
 
 if __name__ == "__main__":
     document = os.path.join(os.path.dirname(__file__), "samples", "example_letter.txt")
 
-    anonymized_document = replace_identifying_info(document, model_type=GPT4_MINI)
+    anonymized_document = replace_identifying_info(document, model_type=LLAMA_TURBO_70B)
     print("*" * 50)
     print(anonymized_document)

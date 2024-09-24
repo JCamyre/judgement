@@ -3,6 +3,7 @@ import litellm
 from dotenv import load_dotenv
 from openai import OpenAI
 from langfuse import Langfuse
+from together import Together
 
 load_dotenv()
 
@@ -18,4 +19,8 @@ langfuse = Langfuse(
     host=os.getenv("LANGFUSE_HOST"),
 )
 
-__all__ = ['client', 'langfuse']
+together_client = Together(
+    api_key=os.getenv("TOGETHERAI_API_KEY"),
+)
+
+__all__ = ['client', 'langfuse', 'together_client']
