@@ -2,7 +2,7 @@
 Takes a document and anonymizes it by replacing all names with alternative names.
 """
 
-from judgement import langfuse, client
+from judgement import langfuse, client, LiteLLMCompletion
 from judgement.data.cleaning import utils
 from judgement.prompt_names import *
 from judgement.constants import *
@@ -31,12 +31,12 @@ def replace_identifying_info(document_path: str, model_type: str = "gpt-4o-mini"
     compiled_prompt = prompt.compile(
         mask_doc=utils.read_file(document_path)   # mask_doc is the langfuse prompt param for the document to be anonymized
     )
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages= compiled_prompt, 
-    )
     # Extract the anonymized document from the response
-    anonymized_document = completion.choices[0].message.content
+    response = LiteLLMCompletion(
+        model="gpt-4o-mini",
+        messages= compiled_prompt,
+    )
+    anonymized_document = response.choices[0].message.content
     return anonymized_document
 
 if __name__ == "__main__":
