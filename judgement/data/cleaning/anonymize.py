@@ -38,6 +38,7 @@ def replace_identifying_info_doc_pairs(draft_document_path: str, final_document_
     )
     
     # TODO: Split the Chat completion into the two separate documents.
+    # TODO: Make sure response_format = {} is fine
     # Extract the anonymized document from the response
     return utils.get_chat_completion(model_type, compiled_prompt)
 
