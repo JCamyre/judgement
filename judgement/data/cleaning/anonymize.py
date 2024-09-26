@@ -31,19 +31,13 @@ def replace_identifying_info_doc_pairs(draft_document_path: str, final_document_
     with open(final_document_path, "r") as file:
         final_content = file.read()
         
-    concatenated_content = f"{draft_content}\n{final_content}"
-    
-    # Testing
-    with open("test.txt", "w") as output_file:
-        output_file.write(concatenated_content)
-        
-    # How to tell LLM to know where to split the documents back.
-    # It's pretty obv when one letter ends and the next begins, even LLM would know that.
+    concatenated_content = f"First email: {draft_content}\nSecond email: {final_content}"
     
     compiled_prompt = prompt.compile(
         mask_doc=concatenated_content   # mask_doc is the langfuse prompt param for the document to be anonymized
     )
     
+    # TODO: Split the Chat completion into the two separate documents.
     # Extract the anonymized document from the response
     return utils.get_chat_completion(model_type, compiled_prompt)
 
