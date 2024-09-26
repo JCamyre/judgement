@@ -21,9 +21,7 @@ def replace_identifying_info_doc_pairs(draft_document_path: str, final_document_
         ANONYMIZATION_PAIR_PROMPT,  
         type="chat"
     )
-    
-    print(prompt.prompt)
-    
+        
     # Add logic to concentate documents
     with open(draft_document_path, "r") as file:
         draft_content = file.read()
