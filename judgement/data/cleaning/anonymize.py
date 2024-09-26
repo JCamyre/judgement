@@ -9,8 +9,14 @@ from judgement.constants import *
 import os
 import pprint
 import litellm
+import pydantic
+from typing import Dict
 
-def replace_identifying_info_doc_pairs(draft_document_path: str, final_document_path: str, model_type: str = GPT4_MINI) -> str:
+class DocumentOutput(pydantic.BaseModel):
+    draft_doc: str
+    final_doc: str
+
+def replace_identifying_info_doc_pairs(draft_document_path: str, final_document_path: str, response_format: pydantic.BaseModel, model_type: str = GPT4_MINI) -> Dict[str, str]:
     if not os.path.exists(draft_document_path):
         raise FileNotFoundError(f"File not found at path: {draft_document_path}")
     
@@ -35,10 +41,8 @@ def replace_identifying_info_doc_pairs(draft_document_path: str, final_document_
         mask_doc=concatenated_content   # mask_doc is the langfuse prompt param for the document to be anonymized
     )
     
-    # TODO: Split the Chat completion into the two separate documents.
-    # TODO: Make sure response_format = {} is fine
-    # Extract the anonymized document from the response
-    return utils.get_chat_completion(model_type, compiled_prompt)
+    chat_completion = utils.get_chat_completion(model_type, compiled_prompt, response_format=response_format)
+    return response_format.model_validate_json(chat_completion).model_dump()
 
 def replace_identifying_info(document_path: str, model_type: str = GPT4_MINI) -> str:
     """
@@ -66,10 +70,15 @@ def replace_identifying_info(document_path: str, model_type: str = GPT4_MINI) ->
 
 if __name__ == "__main__":
     # document = os.path.join(os.path.dirname(__file__), "samples", "example_letter.txt")
+    # anonymized_document = replace_identifying_info(document, model_type=GPT4_MINI)
+    # print("*" * 50)
+    # print(anonymized_document)
     draft_document_path = os.path.join(os.path.dirname(__file__), "samples", "example_draft.txt")
     final_document_path = os.path.join(os.path.dirname(__file__), "samples", "example_final.txt")
-    # anonymized_document = replace_identifying_info(document, model_type=GPT4_MINI)
-    anonymized_documents = replace_identifying_info_doc_pairs(draft_document_path, final_document_path)
+    anonymized_documents = replace_identifying_info_doc_pairs(draft_document_path, final_document_path, DocumentOutput)
     print("*" * 50)
-    # print(anonymized_document)
-    print(anonymized_documents)
+    with open(os.path.join(os.path.dirname(__file__), "samples", "example_draft_anonymized.txt"), "w") as file:
+        file.write(anonymized_documents["draft_doc"])
+        
+    with open(os.path.join(os.path.dirname(__file__), "samples", "example_final_anonymized.txt"), "w") as file:
+        file.write(anonymized_documents["final_doc"])
