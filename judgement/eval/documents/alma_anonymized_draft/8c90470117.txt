@@ -1,0 +1,57 @@
+September 25, 2024
+
+United States Citizenship and Immigration Service Regional Service Center
+
+RE: Recommendation Letter for Arjun Patil's O-1 Visa Petition
+
+Dear USCIS Officer:
+
+I am writing to provide my strongest recommendation for Arjun Patil's O-1 visa petition. As a Professor of Computer Science and Engineering at Columbia University, I have had the opportunity to work closely with Mr. Patil and can attest to his exceptional abilities in the field of data science and machine learning. Through this letter, I aim to detail Mr. Patil's outstanding qualifications that make him highly deserving of the O-1 visa classification.
+
+[Recommender Background]
+
+As a Professor of Computer Science and Engineering at Columbia University, I have extensive experience in the fields of computer security, privacy, and machine learning. My research focuses on developing techniques to measure and defend against security and privacy threats, with a particular emphasis on safeguarding online ecosystems.
+
+Prior to my current role at Columbia, I held positions as an Associate Professor and Assistant Professor at Columbia, a Research Staff Member at the International Computer Science Institute, and an Assistant Professor at Fairfax University. I earned my PhD and Bachelor's degrees in Computer Science from the University of Colorado Boulder.
+
+Throughout my career, I have published numerous papers in top-tier computer science conferences and journals, showcasing my expertise in the field. This background provides me with the knowledge and experience necessary to evaluate the qualifications and contributions of researchers like Arjun Patil.
+
+[Recommender-beneficiary Connection]
+
+I first became acquainted with Mr. Patil when he was a graduate student at Columbia University and worked as a data scientist on our Online Political Ads Transparency Project from June 2018 to August 2019. During this time, Mr. Patil played a key role in analyzing a large dataset of over 1.3 million political ads collected from Facebook, Google, and Twitter.
+
+As the faculty lead on this project, I had the opportunity to work closely with Mr. Patil and observe his technical abilities firsthand. He demonstrated exceptional skills in data analysis, machine learning, and programming, which were instrumental in uncovering important insights about online political advertising.
+
+One of Mr. Patil's most significant contributions was his work on developing a methodology to effectively classify different types of political ads based on their intent. This allowed our team to better understand the strategies and tactics used by various political advertisers. Mr. Patil's analytical rigor and attention to detail were evident throughout this process.
+
+Beyond his technical proficiency, I was impressed by Mr. Patil's ability to collaborate effectively with our research team and external partners, including journalists who used our findings to shed light on issues of transparency and accountability in online political advertising. His clear communication and interpersonal skills were valuable assets to our project.
+
+Since the conclusion of our project, I have followed Mr. Patil's career with great interest. I understand that he has gone on to apply his expertise in machine learning and data science to combat fraud and abuse at leading companies like Orion and VentureTech. While I cannot speak to the specifics of his work in these roles, I have every confidence that he has continued to make valuable contributions in his field.
+
+[Criteria Discussion]
+
+Mr. Patil's most significant original contribution during his time at Columbia was his work on the Online Political Ads Transparency Project from June 2018 to August 2019. This project aimed to analyze political advertising on major social media platforms, including Facebook, Google, and Twitter, in the lead-up to the 2018 U.S. midterm elections.
+
+As a data scientist on the project team, Mr. Patil played a key role in collecting and analyzing a dataset of over 1.3 million political ads. His expertise in data science and machine learning was instrumental in processing and interpreting this large volume of data.
+
+Through his work, Mr. Patil contributed to the project's goal of providing greater transparency into online political advertising. The team's findings offered valuable insights into the strategies and tactics used by political advertisers on social media platforms.
+
+The significance of the Online Political Ads Transparency Project is evident in the fact that it was featured in a July 2018 article in The Washington Post titled "The Biggest Spender of Political Ads on Facebook? President Trump." The article highlighted the project's analysis of political ad spending on Facebook, particularly the finding that President Trump and his political action committee were the top spenders on the platform.
+
+Having his work featured in a prestigious publication like The Washington Post underscores the relevance and impact of Mr. Patil's contributions to the field of political advertising analysis. It also demonstrates the recognition of his expertise by respected journalists and media outlets.
+
+In summary, Mr. Patil's involvement in the Online Political Ads Transparency Project at Columbia represents a significant original contribution to the understanding of political advertising on social media platforms. His skills in data science and machine learning were crucial to the project's success and its recognition in major media outlets like The Washington Post.
+
+[Conclusion]
+
+In conclusion, Arjun Patil's work on the Online Political Ads Transparency Project at Columbia demonstrates his significant contributions to the field of political advertising analysis. His expertise in data science and machine learning allowed him to effectively collect, process, and interpret a large dataset of political ads from major social media platforms. The insights generated from this project, as recognized by coverage in The Washington Post, underscore the relevance and impact of his work.
+
+Based on the information provided in this letter, I believe that Mr. Patil's skills, experience, and documented achievements make him a strong candidate for the O-1A visa classification. His ability to apply advanced technical skills to address complex issues and contribute to projects with real-world impact sets him apart in his field.
+
+Sincerely,
+
+Diana Murphy
+Professor of Computer Science and Engineering
+Columbia University
+Email: murphy@columbia.edu
+Phone: (123) 456-7890
