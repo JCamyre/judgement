@@ -10,6 +10,7 @@ class CriteriaOutput(pydantic.BaseModel):
     CRITERIA: str
     THOUGHTS: str
 
+# TODO: Append the criteria to the next LLM call. Have to update the prompt to inform LLM about it.
 def generate_criteria(rough_draft_path: str, final_draft_path: str, model_type: str = GPT4_MINI, response_format: str = CriteriaOutput):
     prompt = langfuse.get_prompt(
         LLM_GEN_CRITIERIA,
@@ -31,14 +32,16 @@ def generate_criteria(rough_draft_path: str, final_draft_path: str, model_type: 
     
     # Format the response into two parts: the explanation for everything, and the criteria
     
-    
-    return get_chat_completion(model_type, compiled_prompt, response_format=response_format)
-    
+    chat_completion = get_chat_completion(model_type, compiled_prompt, response_format=response_format)
+    return response_format.model_validate_json(chat_completion).model_dump()
 
 if __name__ == "__main__":
     # Testing
     rough_draft_path = os.path.join(os.path.dirname(__file__), "documents/alma_anonymized_draft", "243711d2cc.txt")
     final_draft_path = os.path.join(os.path.dirname(__file__), "documents/alma_anonymized_final", "243711d2cc.txt")
-    print(generate_criteria(rough_draft_path, final_draft_path))
+    output = generate_criteria(rough_draft_path, final_draft_path)
+    criteria = output["CRITERIA"]
+    thoughts = output["THOUGHTS"]
+    print(f"{criteria=}, {thoughts=}")
     print("*" * 50)
     
