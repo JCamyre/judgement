@@ -1,5 +1,5 @@
 """
-LLM as a judge
+LLM as a judge general implementation
 
 Assume you have:
 - dataset: pairs of (predicted, gold) outputs for a task
