@@ -13,16 +13,14 @@ from typing import List, Tuple, Mapping
 class LLMJudge:
     
     """
-    a foundation model with a set of criteria for judging the quality of predicted/gold outputs
+    A foundation model for judging the quality of predicted/gold outputs
     """
 
-    def __init__(self, judge, criteria):
-        self.judge = judge
-        self.criteria = criteria
-        
+    def __init__(self, judge):
+        self.judge = judge        
         self.eval_prompt = ""  # prompt for the evaluation task  TODO write this
     
-    def evaluate_sample(self, pred, gold):
+    def evaluate_sample(self, pred, gold, criteria):
         """
         Produces an evaluation of the predicted output against the gold output
         based on the judge's criteria.
@@ -39,8 +37,9 @@ class MixtureofJudges:
     A mixture of multiple LLM as judges
     """
 
-    def __init__(self, judges: List[str], criteria: str):
-        self.judges = [LLMJudge(model, criteria) for model in judges]
+    def __init__(self, judges: List[str], mixture_prompt: str):
+        self.judges = [LLMJudge(model) for model in judges]
+        self.mixture_prompt = mixture_prompt
 
     def evaluate_sample(self, pred, gold):
         pass
