@@ -2,19 +2,25 @@ import dspy
 from dspy.datasets.gsm8k import GSM8K
 from dspy.evaluate import Evaluate
 from dspy.teleprompt import BootstrapFewShot, BootstrapFewShotWithRandomSearch
+import litellm
 
-# Set up the LM.
-turbo = dspy.OpenAI(model='gpt-3.5-turbo-instruct', max_tokens=250)
+from judgement.data.cleaning import utils
+from judgement.constants import GPT4_MINI, CLAUDE_SONNET
+
+# def litellm_completion(prompt, **kwargs):
+#     prompt = {"content": prompt, "role": "user"}
+#     return utils.get_chat_completion(model_type=CLAUDE_SONNET, messages=prompt)
+
+# dspy.settings.configure(lm=litellm_completion)
+
+turbo = dspy.OpenAI(model='gpt-3.5-turbo-0125', max_tokens=250)
 dspy.settings.configure(lm=turbo)
-# TODO: litellm, specify some model
-# model = None
-# dspy.settings.configure(lm=model)
-# dspy.
+print(f"{turbo.api_key=}")
 
 # Load math questions from the GSM8K dataset.
 gsm8k = GSM8K()
 gsm8k_trainset, gsm8k_devset = gsm8k.train[:10], gsm8k.dev[:10]
-print(f"{gsm8k_trainset=}")
+# print(f"{gsm8k_trainset=}")
 
 # TODO Step 1: Set up auto arena
 def dummy_auto_arena():
@@ -43,7 +49,7 @@ config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
 
 # TODO: Add call to Arena Hard
 def custom_metric(output, reference, trace=None) -> float:
-    print(f"{output=}, {reference=}, {trace=}")
+    # print(f"{output=}, {reference=}, {trace=}")
     score = 23.3  # Replace with actual scoring logic
     confidence_interval = (-2.1, 1.4)  # Replace with actual CI calculation
     
@@ -60,7 +66,7 @@ def custom_metric(output, reference, trace=None) -> float:
     return adjusted_score / 100
 
 # teleprompter = BootstrapFewShotWithRandomSearch(metric=custom_metric, **config)
-teleprompter = BootstrapFewShotWithRandomSearch(metric=custom_metric, max_bootstrapped_demos=2, num_candidate_programs=8, num_threads=4)
+teleprompter = BootstrapFewShotWithRandomSearch(metric=custom_metric, max_bootstrapped_demos=8, num_candidate_programs=8, num_threads=4)
 
 optimized_cot = teleprompter.compile(CoT(), trainset=gsm8k_trainset)
 
@@ -70,4 +76,4 @@ evaluate = Evaluate(devset=gsm8k_devset, metric=custom_metric, num_threads=4, di
 # Evaluate our `optimized_cot` program.
 evaluate(optimized_cot)
 
-print(turbo.inspect_history(n=1))
+# print(turbo.inspect_history(n=1))
