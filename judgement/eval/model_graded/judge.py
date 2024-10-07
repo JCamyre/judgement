@@ -8,6 +8,7 @@ Assume you have:
 - a criteria for judging the quality of the predicted/gold outputs 
 """
 
+import pprint
 import langfuse as lf
 from torch.utils.data import DataLoader
 from typing import List, Tuple, Mapping, Callable
@@ -102,10 +103,46 @@ class MixtureofJudges:
     A mixture of multiple LLM as judges
     """
 
-    def __init__(self, judges: List[str], eval_prompt_skeleton: lf.client.ChatPromptClient, mixture_prompt: str):
+    def __init__(self, judges: List[str], eval_prompt_skeleton: lf.client.ChatPromptClient, mixture_base_prompt: lf.client.ChatPromptClient):
         self.judges = judges  # list of judge model names
         self.eval_prompt_skeleton = eval_prompt_skeleton  # base prompt for the evaluation task 
-        self.mixture_prompt = mixture_prompt  # prompt for mixing judge answers
+        self.mixture_base_prompt = mixture_base_prompt  # prompt for mixing judge answers
+
+    def build_dynamic_mixture_prompt(self, judge_responses: List[str]) -> str:
+        """
+        Builds a dynamic prompt for mixing the judge responses, depending on the number of judges.
+
+        Args:
+            judge_responses (List[str]): the responses from the judges
+        """
+
+        
+        # Format the judge responses first
+        formatted_responses = "\n".join([f"# Judge {i + 1}'s response: #\n{response}" for i, response in enumerate(judge_responses)])
+        """
+        You are tasked with synthesizing responses from multiple expert judges. You will receive N individual answers on the same topic. Your job is to:
+
+        1. Analyze and compare the key points, patterns, and agreements between the answers.
+        2. Identify the consensus by focusing on areas where most or all of the answers align. Consider common reasoning and frequently mentioned conclusions.
+        3. Condense the responses into a single, coherent, and concise answer that represents the collective judgment of the group.
+        4. When opinions differ or contradict, highlight the most supported viewpoint while briefly acknowledging the dissenting perspectives.
+        5. Ensure the final answer is balanced and clear, providing a comprehensive summary that captures the wisdom of all judges while avoiding repetition.
+
+        ## Start of Judge Responses ##
+        {{judge_responses}}
+        ## End of Judge Responses ##
+        Synthesized response:
+        """
+        # Inject the judge responses into the mixture prompt
+        compiled_mixture_prompt = self.mixture_base_prompt.compile(
+            judge_responses=formatted_responses,
+        )
+        return compiled_mixture_prompt
+        
+
+
+        
+        
 
     def evaluate_sample(self, pred: str, gold: str, criteria: str):
         """
@@ -116,8 +153,19 @@ class MixtureofJudges:
             gold (str): the gold output
             criteria (str): the criteria for evaluation
         """
+        # Create evaluation prompt 
+        compiled_eval_prompt = self.eval_prompt_skeleton.compile(
+            criteria=criteria,
+            pred=pred,
+            gold=gold,
+            judges=self.judges,
+        )
+
         # Collect all judge responses 
-        responses = utils.get_completion_multiple_models()
+        responses = utils.get_completion_multiple_models(
+            models=self.judges,
+            message=compiled_eval_prompt,
+        )
 
         # Compile responses into the mixture prompt
         # TODO not implemented yet
@@ -149,4 +197,10 @@ class MixtureofJudges:
             responses = self.evaluate_samples_batch(criteria, predicted_batch, gold_batch)
             total_responses.extend(responses)
         return total_responses
+
+
+if __name__ == "__main__":
+    moj = MixtureofJudges(judges=["gpt4", "gpt4-mini"], eval_prompt_skeleton="", mixture_base_prompt=langfuse.get_prompt("mixture_of_judges_base"))
+
+    pprint.pprint(moj.build_dynamic_mixture_prompt(["response1", "response2"]))
 
