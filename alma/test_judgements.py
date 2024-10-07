@@ -2,12 +2,12 @@ import os
 from judgement import * 
 from judgement.constants import *
 from judgement.prompt_names import *
-from judgement.eval.model_graded import judge 
+from judgement.eval.model_graded import comparisons
 
 
 
 def test_single_judge():
-    llm_judge = judge.LLMJudge(
+    llm_judge = comparisons.ComparisonEvaluator(
         judge=GPT4O,
         eval_prompt_skeleton=langfuse.get_prompt(LETTER_COMPARISON),
     )
@@ -39,7 +39,7 @@ def test_mixture_of_judges():
         rd_content = rough_draft_file.read()
         fd_content = final_draft_file.read()
     
-    judge_mixture = judge.MixtureofJudges(
+    judge_mixture = comparisons.ComparisonMixture(
         judges=[GPT4O, CLAUDE_SONNET, GPT4_MINI],
         aggregator=GPT4O,
         eval_prompt_skeleton=langfuse.get_prompt(LETTER_COMPARISON),
