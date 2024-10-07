@@ -139,11 +139,6 @@ class MixtureofJudges:
         )
         return compiled_mixture_prompt
         
-
-
-        
-        
-
     def evaluate_sample(self, pred: str, gold: str, criteria: str):
         """
         Produces an evaluation of the predicted output against the gold output based on the judges' criteria.
@@ -197,10 +192,3 @@ class MixtureofJudges:
             responses = self.evaluate_samples_batch(criteria, predicted_batch, gold_batch)
             total_responses.extend(responses)
         return total_responses
-
-
-if __name__ == "__main__":
-    moj = MixtureofJudges(judges=["gpt4", "gpt4-mini"], eval_prompt_skeleton="", mixture_base_prompt=langfuse.get_prompt("mixture_of_judges_base"))
-
-    pprint.pprint(moj.build_dynamic_mixture_prompt(["response1", "response2"]))
-

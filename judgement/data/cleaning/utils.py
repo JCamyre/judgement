@@ -102,7 +102,6 @@ def get_completion_multiple_models(models: List[str], message: List[Mapping], re
                 messages=message,    
                 response_format=response_format
                 )
-    print(all_responses)
     return [response.choices[0].message.content for response in all_responses] 
 
 
