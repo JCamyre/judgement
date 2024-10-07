@@ -87,6 +87,10 @@ def get_chat_completion(model_type: str,
         return out
 
 
+def get_completion_multiple_models():
+    pass 
+
+
 if __name__ == "__main__":
     
     # # Batched

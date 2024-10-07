@@ -19,7 +19,7 @@ from judgement.data.cleaning import utils
 class LLMJudge:
     
     """
-    A foundation model for judging the quality of predicted/gold outputs
+    A single foundation model for judging the quality of predicted/gold outputs
     """
 
     def __init__(self, judge: str, eval_prompt_skeleton: lf.client.ChatPromptClient):
@@ -78,7 +78,6 @@ class LLMJudge:
         chat_completions = utils.get_chat_completion(self.judge, compiled_eval_prompts, batched=True)
         return chat_completions
 
-
     def evaluate_test_set(self, criteria: str, dataset: dataset.ResponseDataset, collate_fn: Callable, batch_size: int = 8):
         """
         Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
@@ -103,10 +102,10 @@ class MixtureofJudges:
     A mixture of multiple LLM as judges
     """
 
-    def __init__(self, judges: List[str], mixture_prompt: str):
-        self.judges = [LLMJudge(model) for model in judges]
-        self.eval_prompt = ""  # base prompt for the evaluation task  TODO write this
-        self.mixture_prompt = mixture_prompt
+    def __init__(self, judges: List[str], eval_prompt_skeleton: lf.client.ChatPromptClient, mixture_prompt: str):
+        self.judges = judges  # list of judge model names
+        self.eval_prompt_skeleton = eval_prompt_skeleton  # base prompt for the evaluation task 
+        self.mixture_prompt = mixture_prompt  # prompt for mixing judge answers
 
     def evaluate_sample(self, pred: str, gold: str, criteria: str):
         """
@@ -117,11 +116,22 @@ class MixtureofJudges:
             gold (str): the gold output
             criteria (str): the criteria for evaluation
         """
-        # TODO
-        # 1. generate the prompt for the evaluation task
-        # 2. run the judge models on the prompt (parallelized)
-        # 3. aggregate the results
-        pass
+        # Collect all judge responses 
+        responses = utils.get_completion_multiple_models()
+
+        # Compile responses into the mixture prompt
+        # TODO not implemented yet
+
+    def evaluate_samples_batch(self, preds: List[str], golds: List[str], criteria: str):
+        """
+        Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
+
+        Args:
+            preds (List[str]): the predicted outputs
+            golds (List[str]): the gold outputs
+            criteria (str): the criteria for evaluation
+        """
+        return [self.evaluate_sample(pred, gold, criteria) for pred, gold in zip(preds, golds)]    
 
     def evaluate_test_set(self, criteria: str, dataset: dataset.ResponseDataset, collate_fn: Callable, batch_size: int):
         """
@@ -133,5 +143,10 @@ class MixtureofJudges:
             collate_fn (Callable): the collate function to use for batching the data
             batch_size (int): the batch size to use for evaluation
         """
-        pass
+        dataloader = DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn)
+        total_responses = []
+        for predicted_batch, gold_batch in dataloader:
+            responses = self.evaluate_samples_batch(criteria, predicted_batch, gold_batch)
+            total_responses.extend(responses)
+        return total_responses
 
