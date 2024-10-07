@@ -10,14 +10,13 @@ Assume you have:
 
 from abc import ABC, abstractmethod
 import langfuse as lf
-from torch.utils.data import DataLoader
 from typing import List, Tuple, Mapping, Callable
 from judgement import * 
 from judgement.constants import *
 from judgement.litellm_model_names import LITE_LLM_MODEL_NAMES
-from judgement.data.common import dataset 
-from judgement.data.common import utils
 from judgement.eval.model_graded.exceptions import JudgeNotSupportedError
+
+
 class LLMJudge(ABC):
     """
     An abstract class for judging the quality of outputs using an LLM
@@ -56,7 +55,7 @@ class LLMJudge(ABC):
     @abstractmethod
     def evaluate_test_set(self, *args, **kwargs) -> List[str]:
         """
-        Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
+        Produces an evaluation across a whole dataset.
         """
         pass
 
@@ -89,20 +88,20 @@ class MixtureofJudges(ABC):
     @abstractmethod
     def evaluate_sample(self, *args, **kwargs) -> str:
         """
-        Produces an evaluation of the predicted output against the gold output based on the judges' criteria.
+        Produces an evaluation of task output based on the judges' criteria.
         """
         pass
 
     @abstractmethod
     def evaluate_samples_batch(self, *args, **kwargs) -> List[str]:
         """
-        Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
+        Produces an evaluation of samples across a batch of data.
         """
         pass
 
     @abstractmethod
     def evaluate_test_set(self, *args, **kwargs) -> List[str]:
         """
-        Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
+        Produces an evaluation of samples across the entire dataset..
         """
         pass
