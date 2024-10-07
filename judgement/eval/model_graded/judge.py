@@ -103,8 +103,9 @@ class MixtureofJudges:
     A mixture of multiple LLM as judges
     """
 
-    def __init__(self, judges: List[str], eval_prompt_skeleton: lf.client.ChatPromptClient, mixture_base_prompt: lf.client.ChatPromptClient):
+    def __init__(self, judges: List[str], aggregator: str, eval_prompt_skeleton: lf.client.ChatPromptClient, mixture_base_prompt: lf.client.ChatPromptClient):
         self.judges = judges  # list of judge model names
+        self.aggregator = aggregator  # model name for the aggregator judge
         self.eval_prompt_skeleton = eval_prompt_skeleton  # base prompt for the evaluation task 
         self.mixture_base_prompt = mixture_base_prompt  # prompt for mixing judge answers
 
@@ -163,7 +164,12 @@ class MixtureofJudges:
         )
 
         # Compile responses into the mixture prompt
-        # TODO not implemented yet
+        compiled_mixture_prompt = self.build_dynamic_mixture_prompt(responses)
+        mixed_response = utils.get_chat_completion(
+            model_type=self.aggregator,
+            messages=compiled_mixture_prompt,
+        )
+        return mixed_response
 
     def evaluate_samples_batch(self, preds: List[str], golds: List[str], criteria: str) -> List[str]:
         """
