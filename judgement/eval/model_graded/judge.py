@@ -13,8 +13,16 @@ import langfuse as lf
 from torch.utils.data import DataLoader
 from typing import List, Tuple, Mapping, Callable
 from judgement import * 
+from judgement.constants import *
+from judgement.litellm_model_names import LITE_LLM_MODEL_NAMES
 from judgement.data.common import dataset 
 from judgement.data.cleaning import utils
+
+
+class JudgeNotSupportedError(Exception):
+    def __init__(self, judge: str):
+        self.judge = judge
+        super().__init__(f"Model {judge} is not supported by Litellm or Together for completions.")
 
 
 class LLMJudge:
@@ -31,7 +39,9 @@ class LLMJudge:
             judge (str): Model name for the judge
             eval_prompt (lf.client.ChatPromptClient): Base prompt for the evaluation task; Langfuse object that holds the base prompt and can be compiled with dynamic args.
         """
-        self.judge = judge  # TODO: check that this is a valid model name
+        if judge not in LITE_LLM_MODEL_NAMES and judge not in TOGETHER_SUPPORTED_MODELS:
+            raise JudgeNotSupportedError(judge)
+        self.judge = judge 
 
         if type(eval_prompt_skeleton) == str:
             raise TypeError(f"Eval prompt must be a Langfuse chat prompt object to compile args. Got: {type(eval_prompt_skeleton)}")       
@@ -48,7 +58,6 @@ class LLMJudge:
             gold (str): the gold output
             
         """
-        # TODO 
         # 1. generate the prompt for the evaluation task
         compiled_eval_prompt = self.eval_prompt_skeleton.compile(
             criteria=criteria,
@@ -57,8 +66,6 @@ class LLMJudge:
         )  # fill in the eval prompt with the dynamic vars
         # 2. run the judge model on the prompt
         chat_completion = utils.get_chat_completion(self.judge, compiled_eval_prompt)
-
-        # 3. extract the evaluation from the completion  TODO
         return chat_completion
 
     def evaluate_samples_batch(self, criteria, preds: List[str], golds: List[str]) -> List[str]:
@@ -104,6 +111,9 @@ class MixtureofJudges:
     """
 
     def __init__(self, judges: List[str], aggregator: str, eval_prompt_skeleton: lf.client.ChatPromptClient, mixture_base_prompt: lf.client.ChatPromptClient):
+        for judge in judges:
+            if judge not in LITE_LLM_MODEL_NAMES and judge not in TOGETHER_SUPPORTED_MODELS:
+                raise JudgeNotSupportedError(judge)
         self.judges = judges  # list of judge model names
         self.aggregator = aggregator  # model name for the aggregator judge
         self.eval_prompt_skeleton = eval_prompt_skeleton  # base prompt for the evaluation task 
