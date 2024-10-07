@@ -1,6 +1,10 @@
 """
 Constants for the Judgement module.
 """
+
+# Evaluation params
+MAX_WORKER_THREADS = 10
+
 # Model names
 GPT4_MINI = "gpt-4o-mini"
 GPT4O = "gpt-4o"
