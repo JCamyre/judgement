@@ -3,7 +3,7 @@ Takes a document and anonymizes it by replacing all names with alternative names
 """
 
 from judgement import *
-from judgement.data.cleaning import utils
+from judgement.data.common import utils
 from judgement.prompt_names import *
 from judgement.constants import *
 import os
