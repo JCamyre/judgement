@@ -87,13 +87,28 @@ def get_chat_completion(model_type: str,
         return out
 
 
-def get_completion_multiple_models():
-    pass 
+def get_completion_multiple_models(models: List[str], message: List[Mapping], response_format: pydantic.BaseModel = None) -> List[str]:
+    """
+    Retrieves completions to a prompt from multiple models (in parallel)
+    """
+
+    # for now, we will use the Litellm client to get completions from multiple models
+    # if we want to call the together models, we gotta wait
+    for m in models:
+        if m in TOGETHER_SUPPORTED_MODELS:
+            raise ValueError(f"Model {m} is not supported by Litellm for multiple completions.")
+    all_responses = litellm.batch_completion_models_all_responses(
+                models=models, 
+                messages=message,    
+                response_format=response_format
+                )
+    print(all_responses)
+    return [response.choices[0].message.content for response in all_responses] 
 
 
 if __name__ == "__main__":
     
-    # # Batched
+    # Batched
     pprint.pprint(get_chat_completion(
         model_type=GPT4_MINI,
         messages=[
@@ -119,4 +134,11 @@ if __name__ == "__main__":
         batched=False
     ))
 
-
+    # Batched single completion to multiple models
+    pprint.pprint(get_completion_multiple_models(
+        models=[GPT4_MINI, CLAUDE_SONNET],
+        message=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "What is the capital of France?"},
+        ]
+    ))

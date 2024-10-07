@@ -78,7 +78,7 @@ class LLMJudge:
         chat_completions = utils.get_chat_completion(self.judge, compiled_eval_prompts, batched=True)
         return chat_completions
 
-    def evaluate_test_set(self, criteria: str, dataset: dataset.ResponseDataset, collate_fn: Callable, batch_size: int = 8):
+    def evaluate_test_set(self, criteria: str, dataset: dataset.ResponseDataset, collate_fn: Callable, batch_size: int = 8) -> List[str]:
         """
         Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
 
@@ -122,7 +122,7 @@ class MixtureofJudges:
         # Compile responses into the mixture prompt
         # TODO not implemented yet
 
-    def evaluate_samples_batch(self, preds: List[str], golds: List[str], criteria: str):
+    def evaluate_samples_batch(self, preds: List[str], golds: List[str], criteria: str) -> List[str]:
         """
         Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
 
@@ -133,7 +133,7 @@ class MixtureofJudges:
         """
         return [self.evaluate_sample(pred, gold, criteria) for pred, gold in zip(preds, golds)]    
 
-    def evaluate_test_set(self, criteria: str, dataset: dataset.ResponseDataset, collate_fn: Callable, batch_size: int):
+    def evaluate_test_set(self, criteria: str, dataset: dataset.ResponseDataset, collate_fn: Callable, batch_size: int) -> List[str]:
         """
         Produces an evaluation of the predicted outputs against the gold outputs in the dataset.
 
