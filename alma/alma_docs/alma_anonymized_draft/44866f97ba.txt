@@ -1,0 +1,46 @@
+September 28, 2024
+
+United States Citizenship and Immigration Service Regional Service Center
+
+RE: Recommendation Letter for 
+Daniel Park's O-1 Visa Petition
+
+Dear USCIS Officer:
+
+I am writing this letter to recommend Daniel Park for an O-1A visa. As a highly respected researcher in the field of cryptography, I believe Daniel possesses extraordinary abilities that merit this distinguished visa category.
+
+Through this letter, I will provide evidence of Daniel's exceptional skills and original contributions that place him at the very top of his field. His work has had a significant impact on the advancement of cryptographic techniques and their real-world applications.
+
+[Recommender Background]
+
+I am Melissa Wong, a Senior Principal Applied Scientist at Tech Innovations, where I focus on cryptography and its applications in secure cloud computing. Prior to joining Tech Innovations, I spent over two decades at Universal Technologies, making significant contributions to the field of cryptography through my research and development work.
+
+I hold a Ph.D. in Computer Science from the University of California, Berkeley, where I built a strong foundation in algorithms, computer security, and cryptographic techniques. Throughout my career, I have been actively involved in the cryptography research community, contributing to the advancement of the field through publications, collaborations, and participation in professional organizations and conferences.
+
+My expertise lies in the design and analysis of cryptographic algorithms, with a particular focus on their practical implementation and real-world applications. I have made substantial contributions to the development of homomorphic encryption techniques, which enable computations on encrypted data without compromising privacy. This work has significant implications for secure cloud computing and privacy-preserving data analysis.
+
+Having followed Daniel Park's research and contributions to the field of homomorphic encryption, I am well-positioned to evaluate his work and provide an informed assessment of his qualifications for an O-1A visa. Daniel's innovative work on the CKKS scheme and its implementations has pushed the boundaries of what is possible with homomorphic encryption, and I believe his contributions are truly extraordinary.
+
+[Beneficiary's Original Contributions]
+
+Daniel Park's most significant original contribution to the field of cryptography is his co-authorship of the Cheon-Kim-Kim-Song (CKKS) homomorphic encryption scheme. This innovative method enables approximate arithmetic operations, particularly on real numbers, to be performed directly on encrypted data without compromising privacy. The CKKS scheme represents a major advancement in homomorphic encryption, opening up new possibilities for secure computation and privacy-preserving data analysis.
+
+Daniel's specific contributions to the development of the CKKS scheme demonstrate his exceptional expertise in cryptographic algorithms and their real-world applications. He played a key role in designing the encoding and decoding mechanisms that allow the scheme to efficiently handle floating-point numbers, a critical feature for many practical use cases. Additionally, Daniel contributed to the development of the rescaling operation, which helps manage the noise growth inherent in homomorphic encryption, thereby improving the scheme's performance and practicality.
+
+The CKKS scheme has been widely recognized as a groundbreaking achievement in the field of homomorphic encryption. It has been implemented in several major open-source libraries and has been used in various privacy-preserving applications, such as secure machine learning and confidential data analysis. Daniel's work on the CKKS scheme has laid the foundation for further advancements in this area and has inspired numerous follow-up research efforts.
+
+Beyond his work on the CKKS scheme, Daniel has made several other notable contributions to the field of homomorphic encryption. He has published multiple papers on optimizations and improvements to existing homomorphic encryption schemes, demonstrating his deep understanding of the underlying mathematical principles and his ability to push the boundaries of what is possible with these techniques. His research has been widely cited by other experts in the field, further attesting to the significance and impact of his work.
+
+[Conclusion]
+
+In conclusion, Daniel Park's co-authorship of the CKKS homomorphic encryption scheme represents a significant contribution to the field of cryptography. The CKKS scheme introduces novel techniques for performing approximate arithmetic operations on encrypted data, particularly for real numbers. Daniel's specific contributions to the encoding, decoding, and rescaling mechanisms were crucial in making the scheme efficient and practical.
+
+The CKKS scheme has been implemented in several widely-used open-source libraries, demonstrating its potential for real-world applications. Daniel's work has laid the foundation for further research and development in the area of homomorphic encryption.
+
+Based on the evidence provided in this letter, I believe Daniel Park's contributions to the field of cryptography, particularly his work on the CKKS scheme, make him a strong candidate for an O-1A visa.
+
+Sincerely,
+
+Melissa Wong
+Senior Principal Applied Scientist
+Tech Innovations
