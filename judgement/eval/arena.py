@@ -2,33 +2,11 @@ import dspy
 from dspy.datasets.gsm8k import GSM8K
 from dspy.evaluate import Evaluate
 from dspy.teleprompt import BootstrapFewShot, BootstrapFewShotWithRandomSearch
-import litellm
 import pandas as pd
-
-from judgement.data.cleaning import utils
-from judgement.constants import GPT4_MINI, CLAUDE_SONNET
-
-# def litellm_completion(prompt, **kwargs):
-#     prompt = {"content": prompt, "role": "user"}
-#     return utils.get_chat_completion(model_type=CLAUDE_SONNET, messages=prompt)
-
-# dspy.settings.configure(lm=litellm_completion)
 
 turbo = dspy.OpenAI(model='gpt-4o-mini', max_tokens=250)
 dspy.settings.configure(lm=turbo)
-# print(f"{turbo.api_key=}")
 
-# Load math questions from the GSM8K dataset.
-# TODO: Load alma data.
-# Do I need to have some examples rough + draft + criteria, as well?
-# Training set + dev set: Question: prompt + rough + draft, gold_reasoning: criteria
-# 70% 30% split.
-# Difference between trainset + devset, is devset like validation set?
-
-gsm8k = GSM8K()
-gsm8k_trainset, gsm8k_devset = gsm8k.train[:10], gsm8k.dev[:10]
-print(f"{gsm8k_trainset[0]=}")
-# print(f"{gsm8k_devset=}")
 df = pd.read_csv("./judgement/eval/output.csv")
 
 dataset = []
@@ -38,11 +16,10 @@ for context, question, answer in df.values:
 
     example = dspy.Example(question=combined_input, answer=answer)
     example = example.with_inputs("question")
-    print(f"{example=}")
     dataset.append(example)
     
 alma_trainset, alma_devset = dataset[:7], dataset[7:]
-print(f"{type(alma_trainset[0])=}")
+# print(f"{type(alma_trainset[0])=}")
 
 # Step 2: Use DSPY to optimize given the response from arena judge
 # Task: Optimize the criteria prompt given to a LLM as a judge, which will score immigration letters.
@@ -64,7 +41,7 @@ config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
 
 # TODO: Add call to Arena Hard Auto
 def custom_metric(output, reference, trace=None) -> float:
-    # print(f"{output=}, {reference=}, {trace=}")
+    print(f"{output=}, {reference=}, {trace=}")
     score = 23.3  # Replace with actual scoring logic
     confidence_interval = (-2.1, 1.4)  # Replace with actual CI calculation
     
