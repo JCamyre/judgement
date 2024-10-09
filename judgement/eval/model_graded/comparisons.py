@@ -116,7 +116,7 @@ class ComparisonMixture(MixtureofJudges):
         )
         return compiled_mixture_prompt
         
-    def evaluate_sample(self, pred: str, gold: str, criteria: str):
+    def evaluate_sample(self, pred: str, gold: str, criteria: str) -> str:
         """
         Produces an evaluation of the predicted output against the gold output based on the judges' criteria.
 
