@@ -1,3 +1,0 @@
-"""
-LLM as a judge
-"""

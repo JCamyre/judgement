@@ -12,9 +12,10 @@ df = pd.read_csv("./judgement/eval/output.csv")
 dataset = []
 
 for context, question, answer in df.values:
+    # TODO: Improve this prompt
     combined_input = f"Context: {context}\nQuestion: {question}"
 
-    example = dspy.Example(question=combined_input, answer=answer)
+    example = dspy.Example(question=combined_input)
     example = example.with_inputs("question")
     dataset.append(example)
     
@@ -39,26 +40,11 @@ class CoT(dspy.Module):
     
 config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
 
-# TODO: Add call to Arena Hard Auto
+# TODO: Add call to Arena-Hard-esque LLM as a judge
 def custom_metric(output, reference, trace=None) -> float:
     print(f"{output=}, {reference=}, {trace=}")
-    score = 23.3  # Replace with actual scoring logic
-    confidence_interval = (-2.1, 1.4)  # Replace with actual CI calculation
-    
-    # Calculate the average of the confidence interval bounds
-    ci_adjustment = (confidence_interval[0] + confidence_interval[1]) / 2
-    
-    # Adjust the score based on the confidence interval
-    adjusted_score = score + ci_adjustment
 
-    # Ensure the score is within a valid range [0, 100]
-    adjusted_score = max(0, min(adjusted_score, 100))
-    
-    # Return the adjusted score as a percentage
-    return adjusted_score / 100
-
-# # teleprompter = BootstrapFewShotWithRandomSearch(metric=custom_metric, **config)
-teleprompter = BootstrapFewShotWithRandomSearch(metric=custom_metric, max_bootstrapped_demos=2, num_candidate_programs=8, num_threads=4)
+teleprompter = BootstrapFewShot(metric=custom_metric, max_bootstrapped_demos=2, num_candidate_programs=8, num_threads=4)
 
 optimized_cot = teleprompter.compile(CoT(), trainset=alma_trainset)
 
