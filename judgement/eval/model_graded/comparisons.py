@@ -46,7 +46,12 @@ class ComparisonEvaluator(LLMJudge):
             criteria (str): the criteria for evaluation
             preds (List[str]): the predicted outputs
             golds (List[str]): the gold outputs
+
+        Returns:
+            List[str]: the responses from the judge model, one per input pair of (pred, gold)
         """
+        assert len(preds) == len(golds), "Number of predictions and golds must match"
+        
         compiled_eval_prompts = [self.eval_prompt_skeleton.compile(
             criteria=criteria,
             pred=pred,
@@ -131,7 +136,7 @@ class ComparisonMixture(MixtureofJudges):
         # Collect all judge responses 
         responses = utils.get_completion_multiple_models(
             models=self.judges,
-            message=compiled_eval_prompt,
+            messages=[compiled_eval_prompt] * len(self.judges),
         )
 
         # Compile responses into the mixture prompt
