@@ -215,7 +215,6 @@ def get_completion_multiple_models(models: List[str], messages: List[List[Mappin
 
     # Merge the responses in the order of the original models
     out = [None] * len(models)
-    print(together_calls)
     for idx, (model, message, r_format) in together_calls.items():
         out[idx] = together_responses.pop(0)
     for idx, (model, message, r_format) in litellm_calls.items():
