@@ -4,10 +4,6 @@ This file contains utility functions used in repo scripts
 For API calling, we support:
     - parallelized model calls on the same prompt 
     - batched model calls on different prompts
-
-TODO:
-- Add support for parallelized model calls on different prompts
-
 """
 
 from judgement import *
