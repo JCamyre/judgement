@@ -1,3 +1,5 @@
+import pydantic
+
 from judgement.eval.model_graded.judge import LLMJudge
 from judgement.data.common import utils
 
@@ -8,7 +10,7 @@ from judgement.data.common import utils
 
 class ArenaHardJudge(LLMJudge):
     
-    def evaluate_sample(self, rough_draft: str, final_draft: str, baseline_criteria: str, candidate_criteria: str):
+    def evaluate_sample(self, rough_draft: str, final_draft: str, baseline_criteria: str, candidate_criteria: str, response_format: pydantic.BaseModel = None):
         compiled_eval_prompt = self.eval_prompt_skeleton.compile(
             rough_draft=rough_draft,
             final_draft=final_draft,
@@ -16,7 +18,7 @@ class ArenaHardJudge(LLMJudge):
             second_criteria=candidate_criteria
         )
         
-        chat_completion = utils.get_chat_completion(self.judge, compiled_eval_prompt)
+        chat_completion = utils.get_chat_completion(self.judge, compiled_eval_prompt, response_format=response_format)
         return chat_completion
     
     def evaluate_samples_batch(self, *args, **kwargs) -> utils.List[str]:

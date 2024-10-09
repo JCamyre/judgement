@@ -5,7 +5,7 @@ import pydantic
 from judgement import langfuse
 from judgement.constants import GPT4_MINI
 from judgement.prompt_names import LLM_GEN_CRITIERIA
-from judgement.data.cleaning.utils import read_file, get_chat_completion
+from judgement.data.common.utils import read_file, get_chat_completion
 
 class CriteriaOutput(pydantic.BaseModel):
     CRITERIA: str
@@ -21,15 +21,17 @@ def generate_criteria(rough_draft_path: str, final_draft_path: str, criteria: st
     rough_draft = read_file(rough_draft_path)
     final_draft = read_file(final_draft_path)
     
+    raw_prompt_without_criteria = f"<ROUGH DRAFT>: {rough_draft}\<FINAL DRAFT>: {final_draft}"
     raw_prompt = f"Rough draft: {rough_draft}\nFinal draft: {final_draft}\nCurrent criteria: {criteria}"
     
     compiled_prompt = prompt.compile(
         criteria=raw_prompt
     )
+    print(f"{compiled_prompt=}")
     
     # Format the response into two parts: the explanation for everything, and the criteria
     chat_completion = get_chat_completion(model_type, compiled_prompt, response_format=response_format)
-    return raw_prompt, response_format.model_validate_json(chat_completion).model_dump()
+    return raw_prompt_without_criteria, response_format.model_validate_json(chat_completion).model_dump()
 
 if __name__ == "__main__":
     alma_documents_path = os.path.join(os.path.dirname(__file__), "documents/alma_anonymized_draft")
@@ -40,7 +42,7 @@ if __name__ == "__main__":
     with open("./judgement/eval/output.csv", mode="w", newline='') as csv_file:
         csv_writer = csv.writer(csv_file)
         # Write the header
-        csv_writer.writerow(["context", "question", "summary"])
+        csv_writer.writerow(["context", "question", "answer"])
 
         for draft_document_name in os.listdir(alma_documents_path):
             rough_draft_path = os.path.join(alma_documents_path, draft_document_name)
