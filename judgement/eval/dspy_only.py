@@ -62,25 +62,20 @@ config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
 
 # TODO: Add call to Arena-Hard-esque LLM as a judge
 def custom_metric(example: dspy.Example, pred: dspy.Prediction, trace=None) -> float:    
-    # print(f"{example.question=}")
-    # print(f"{pred.answer=}")
     rationale, answer = pred.rationale, pred.answer
-    print(f'{pred=}')
     parts = answer.split("\n\n")
     score = parts[0].split("Score: ")
-    # print(f"{parts=}")
+    
     # Extract score
     if len(score) > 1:
         score = int(parts[0].split("Score: ")[1].strip())
     
-    # Extract reasoning
-    # reasoning = parts[1].split("Reasoning: ")[1].strip()
+        # Extract reasoning
+        # reasoning = parts[1].split("Reasoning: ")[1].strip()
     
-    # print(f"{reference=}")
         metric_score = score / 10
         print(f"{metric_score=}")
-        # return metric_score
-        return 0.1
+        return metric_score
     else:
         print("Scoring didn't work")
         # print(f"{example=}")
