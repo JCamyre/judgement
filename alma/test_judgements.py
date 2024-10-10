@@ -29,7 +29,7 @@ def capture_verdict(text: str):
 
 
 def test_single_judge(
-        sampling_k: int = 1, 
+        sampling_k: int = 3, 
         judge: str = LLAMA3_70B_INSTRUCT_TURBO, 
         input_rd_dir: str = None,
         input_fd_dir: str = None,
@@ -50,7 +50,7 @@ def test_single_judge(
     llm_judge = comparisons.ComparisonEvaluator(
         judge=judge,
         eval_prompt_skeleton=langfuse.get_prompt(LETTER_COMPARISON),
-    )
+    )  # eval prompt skeleton is order dependent (you have to specify the order of the letters)
 
     rd_root = input_rd_dir
     fd_root = input_fd_dir
@@ -60,7 +60,7 @@ def test_single_judge(
         for FILE_NAME in os.listdir(rd_root):
             rd_file = os.path.join(rd_root, FILE_NAME)
             fd_file = os.path.join(fd_root, FILE_NAME)
-            out.write(f"Comparing {rd_file} and {fd_file} using judge {judge}")
+            out.write(f"Comparing {rd_file} and {fd_file} using judge {judge} ")
             logging.info(f"Comparing {rd_file} and {fd_file} using judge {judge}. Writing to {out_file}")
 
             with open(rd_file, "r") as rough_draft_file, open(fd_file, "r") as final_draft_file:
@@ -77,7 +77,7 @@ def test_single_judge(
                                                             preds=[rd_content] * sampling_k, 
                                                             golds=[fd_content] * sampling_k)  # List of responses from the judge model
                 for e in evaluation:
-                    score = capture_verdict(e)
+                    score = capture_verdict(e)   # capture score, e.g. '[[A>>B]]'
                     if score is None:  # couldn't detect answer
                         logging.warning(f"Couldn't detect answer from {e}")
                     scores.append(score)
@@ -123,8 +123,7 @@ def test_mixture_of_judges(
                 logging.warning(f"Couldn't detect answer from {evaluation}")
                 print(f"Couldn't detect answer from {evaluation}")
         with open(output_path, "a") as out:
-            out.write(f"Comparing {rd_file} and {fd_file} using judges {judges} and aggregator {aggregator}\n")
-            out.write(f"Scores: {scores}\n")
+            out.write(f"Comparing {rd_file} and {fd_file} using judges {"/".join(judges) + f"+{aggregator}"} Scores: {scores}\n")
             logging.info(f"Comparing {rd_file} and {fd_file} using judges {judges} and aggregator {aggregator}. Scores: {scores}")
             print(f"Comparing {rd_file} and {fd_file} using judges {judges} and aggregator {aggregator}. Scores: {scores}")
 
@@ -189,7 +188,7 @@ def extract_scores(file_path: str) -> List[dict]:
     if os.path.exists(file_path) is False:
         raise FileNotFoundError(f"File {file_path} not found.")
     results = []
-    pattern = re.compile(r"Comparing (.+?) and (.+?) using judge .+? Scores: (.+)")
+    pattern = re.compile(r"Comparing (.+?) and (.+?) using judges? .+? Scores: (.+)")
 
     with open(file_path, "r") as f:
         lines = f.readlines()
@@ -270,7 +269,7 @@ def map_files(dir: str) -> dict:
 
         else:
             raise ValueError(f"Couldn't extract model name from {FILE_NAME}")
-            
+        
     # Now, convert the model map to a dictionary mapping file names to scores
     for model in res:
         results = res[model]  # List[dict]
@@ -448,20 +447,22 @@ def retrieve_complete_scores(forward_results_dir: str, reversed_results_dir: str
 
 
 if __name__ == "__main__":
-    # # TODO: You may need to update your paths
-    # OUTPUT_DIR = r"C:\Users\alexs\Desktop\judgement\alma\alma_results\letter_comparison"
-    # CRITERIA_PATH = r"C:\Users\alexs\Desktop\judgement\alma\criteria\machine_generated_v1.txt"
+    # TODO: You may need to update your paths
+    OUTPUT_DIR = r"C:\Users\alexs\Desktop\judgement\alma\alma_results\letter_comparison"
+    CRITERIA_PATH = r"C:\Users\alexs\Desktop\judgement\alma\criteria\machine_generated_v1.txt"
+    
     # with open(CRITERIA_PATH, "r") as f:
     #     letter_criteria = f.read()
-    #     # Running tests with a single judge
-    #     # JUDGES = [QWEN, LLAMA3_70B_INSTRUCT_TURBO, LLAMA3_405B_INSTRUCT_TURBO, 
-    #     #         LLAMA3_8B_INSTRUCT_TURBO, MISTRAL_8x22B_INSTRUCT, MISTRAL_8x7B_INSTRUCT]
-    #     # # rd_root = os.path.join(os.path.dirname(__file__), "alma_docs", "alma_anonymized_draft")
-    #     # # fd_root = os.path.join(os.path.dirname(__file__), "alma_docs", "alma_anonymized_final")
-    #     # for judge in JUDGES:
-    #     #     test_single_judge(sampling_k=3, judge=judge, output_dir=OUTPUT_DIR)
-
-    #     # test_single_judge(sampling_k=3, judge=LLAMA3_70B_INSTRUCT_TURBO, output_dir=OUTPUT_DIR)
+    # #     # # Running tests with a single judge
+    # #     # JUDGES = [QWEN, LLAMA3_70B_INSTRUCT_TURBO, LLAMA3_8B_INSTRUCT_TURBO, MISTRAL_8x22B_INSTRUCT, MISTRAL_8x7B_INSTRUCT]
+    # #     # for judge in JUDGES:
+    # #     #     test_single_judge(
+    # #     #         sampling_k=3, 
+    # #     #         judge=judge, 
+    # #     #         input_rd_dir=os.path.join(os.path.dirname(__file__), "alma_docs", "alma_anonymized_draft"),
+    # #     #         input_fd_dir=os.path.join(os.path.dirname(__file__), "alma_docs", "alma_anonymized_final"),
+    # #     #         output_dir=OUTPUT_DIR
+    # #     #     )
 
     #     # Running tests with mixture of models
     #     test_mixture_of_judges(
@@ -473,15 +474,15 @@ if __name__ == "__main__":
     #         criteria=letter_criteria,
     #         input_rd_dir=os.path.join(os.path.dirname(__file__), "alma_docs", "alma_anonymized_draft"),
     #         input_fd_dir=os.path.join(os.path.dirname(__file__), "alma_docs", "alma_anonymized_final"),
-    #         output_path=os.path.join(OUTPUT_DIR, "mixture_results.txt")
+    #         output_path=os.path.join(OUTPUT_DIR, "QWEN_L3_70B_MISTRAL8x22B-QWEN_results.txt")
     #     )
 
 
     ## Scoring conversions ##
 
     per_model, per_file = retrieve_complete_scores(
-        forward_results_dir=r"C:\Users\alexs\Desktop\judgement\alma\alma_results\letter_comparison\standard_order",
-        reversed_results_dir=r"C:\Users\alexs\Desktop\judgement\alma\alma_results\letter_comparison\reversed_order"
+        forward_results_dir=r"C:\Users\alexs\Desktop\judgement\alma\alma_results\letter_comparison\demo\standard_order",
+        reversed_results_dir=r"C:\Users\alexs\Desktop\judgement\alma\alma_results\letter_comparison\demo\reversed_order"
     )
 
     pprint.pprint(per_model)
