@@ -101,7 +101,7 @@ def test_mixture_of_judges(
         eval_prompt_skeleton=langfuse.get_prompt(LETTER_COMPARISON),
         mixture_base_prompt=langfuse.get_prompt(MIXTURE_OF_JUDGES),
     )
-    for FILE_NAME in os.listdir(input_rd_dir)[:3]:
+    for FILE_NAME in os.listdir(input_rd_dir):
         logging.info(f"Comparing {FILE_NAME} using judges {judges} and aggregator {aggregator}")
         print(f"Comparing {FILE_NAME} using judges {judges} and aggregator {aggregator}")
         rd_file = os.path.join(input_rd_dir, FILE_NAME)
@@ -450,7 +450,7 @@ if __name__ == "__main__":
     # TODO: You may need to update your paths
     OUTPUT_DIR = r"C:\Users\alexs\Desktop\judgement\alma\alma_results\letter_comparison"
     CRITERIA_PATH = r"C:\Users\alexs\Desktop\judgement\alma\criteria\machine_generated_v1.txt"
-    
+
     # with open(CRITERIA_PATH, "r") as f:
     #     letter_criteria = f.read()
     # #     # # Running tests with a single judge
