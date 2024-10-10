@@ -6,10 +6,11 @@ import pandas as pd
 from alma.test_arena_hard import test_single_judge
 from judgement.constants import BASE_LETTER_COMPARISON_CRITERIA
 
-turbo = dspy.OpenAI(model='gpt-4o-mini', max_tokens=250)
-dspy.settings.configure(lm=turbo)
 
-df = pd.read_csv("./judgement/eval/output.csv")
+lm = dspy.LM('openai/gpt-4o-mini')
+dspy.configure(lm=lm)
+
+df = pd.read_csv("./judgement/eval/llm_score_drafts_dspy_data.csv")
 
 dataset = []
 
@@ -32,14 +33,21 @@ You will be given a criteria to aid you in choosing the strength of your prefere
 2. <REASONING>: List your reasoning behind your score.
 """
 
-for drafts, criteria, thoughts in df.values:
-    combined_prompt = f"{TEMP_PROMPT}\n{drafts}\n<CRITERIA>:{BASE_LETTER_COMPARISON_CRITERIA}\n"
+for drafts_and_criteria,score,reasoning in df.values:
+    combined_prompt = f"{TEMP_PROMPT}\n{drafts_and_criteria}\n"
+    score_and_reasoning = f"Score: {score}, reasoning: {reasoning}"
 
-    example = dspy.Example(question=combined_prompt)
+    example = dspy.Example(question=combined_prompt,answer=score_and_reasoning)
     example = example.with_inputs("question")
     dataset.append(example)
     
 alma_trainset, alma_devset = dataset[:7], dataset[7:]
+# Remove the golden response from the devset, unnecessary since we have golden metric
+# This is more useful later on, when datasets require a few human annotated examples (expensive), but we won't
+# have to human annotate all examples, just the training set, used as examples for few-shot prompting.
+for example in alma_devset:
+    example.answer = ""
+    
 # print(f"{type(alma_trainset[0])=}")
 
 # Step 2: Use DSPY to optimize given the response from arena judge
@@ -61,7 +69,10 @@ class CoT(dspy.Module):
 config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
 
 # TODO: Add call to Arena-Hard-esque LLM as a judge
-def custom_metric(example: dspy.Example, pred: dspy.Prediction, trace=None) -> float:    
+def custom_metric(gold: dspy.Example, pred: dspy.Prediction, trace=None) -> float:    
+    print(f"{gold=}")
+    print(f"{pred=}")
+    return 0.5    
     rationale, answer = pred.rationale, pred.answer
     parts = answer.split("\n\n")
     score = parts[0].split("Score: ")
@@ -82,8 +93,18 @@ def custom_metric(example: dspy.Example, pred: dspy.Prediction, trace=None) -> f
         print(f"{pred.answer=}")
         return 0.5
 
-teleprompter = BootstrapFewShot(metric=custom_metric, **config)
+# BootstrapFewShot: The model is prompted (by the teleprompter) to look at the DSPy.Examples and generate 4 4-shot examples
+# The model is then prompted to use the 4-shot example to answer the DSPy.Examples.question
+# "Metric function to evaluate examples during bootstrapping" - Some different metric than custom_metric, specifically determines
+# The best examples to use for BootstrapFewShot
+teleprompter = BootstrapFewShot(**config)
 
+# The teleprompter will use Chain of Thought, defined as a DSPy module, along with Bootstrap 4-shot.
+# When you run compile(), it will tell 
+# Use the 
+# You need the answers in alma_trainset, because directly takes examples from the trainset when building the fewshot examples
+# Important: "It assumes that the user-provided examples are useful demonstrations of CoT reasoning."
+# Maybe put devset here too
 optimized_cot = teleprompter.compile(CoT(), trainset=alma_trainset)
 
 # Set up the evaluator, which can be used multiple times.
