@@ -4,10 +4,6 @@ This file contains utility functions used in repo scripts
 For API calling, we support:
     - parallelized model calls on the same prompt 
     - batched model calls on different prompts
-
-TODO:
-- Add support for parallelized model calls on different prompts
-
 """
 
 from judgement import *
@@ -15,6 +11,7 @@ from judgement.constants import *
 from judgement.litellm_model_names import LITE_LLM_MODEL_NAMES as LITELLM_SUPPORTED_MODELS
 import concurrent.futures
 from typing import List, Mapping, Dict, Union
+from langfuse.decorators import observe
 import litellm
 import pydantic
 import pprint
@@ -27,7 +24,7 @@ def read_file(file_path: str) -> str:
     with open(file_path, "r") as file:
         return file.read()
 
-
+@observe
 def fetch_together_api_response(model: str, messages: List[Mapping], response_format: pydantic.BaseModel = None) -> str:
     """
     Fetches a single response from the Together API for a given model and messages.
@@ -48,7 +45,7 @@ def fetch_together_api_response(model: str, messages: List[Mapping], response_fo
         )
     return response.choices[0].message.content
 
-
+@observe
 def query_together_api_multiple_calls(models: List[str], messages: List[List[Mapping]], response_formats: List[pydantic.BaseModel] = None) -> List[str]:
     """
     Queries the Together API for multiple calls in parallel
@@ -131,7 +128,7 @@ def query_litellm_api_multiple_calls(models: List[str], messages: List[Mapping],
                 out[idx] = None 
     return out
 
-
+@observe
 def get_chat_completion(model_type: str, 
                         messages : Union[List[Mapping], List[List[Mapping]]], 
                         response_format: pydantic.BaseModel = None, 
@@ -170,7 +167,7 @@ def get_chat_completion(model_type: str,
     
     raise ValueError(f"Model {model_type} is not supported by Litellm or TogetherAI for chat completions. Please check the model name and try again.")
 
-
+@observe
 def get_completion_multiple_models(models: List[str], messages: List[List[Mapping]], response_formats: List[pydantic.BaseModel] = None) -> List[str]:
     """
     Retrieves completions for a single prompt from multiple models in parallel. Supports closed-source and OSS models.
@@ -215,7 +212,6 @@ def get_completion_multiple_models(models: List[str], messages: List[List[Mappin
 
     # Merge the responses in the order of the original models
     out = [None] * len(models)
-    print(together_calls)
     for idx, (model, message, r_format) in together_calls.items():
         out[idx] = together_responses.pop(0)
     for idx, (model, message, r_format) in litellm_calls.items():
