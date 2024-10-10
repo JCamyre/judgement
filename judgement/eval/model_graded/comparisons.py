@@ -1,7 +1,7 @@
 """
 Implementing LLM judges for comparing predicted outputs against gold outputs in pairs.
 """
-
+from langfuse.decorators import observe
 from typing import List, Tuple, Mapping, Callable
 from torch.utils.data import DataLoader
 
@@ -115,7 +115,8 @@ class ComparisonMixture(MixtureofJudges):
             judge_responses=formatted_responses,
         )
         return compiled_mixture_prompt
-        
+    
+    @observe
     def evaluate_sample(self, pred: str, gold: str, criteria: str) -> str:
         """
         Produces an evaluation of the predicted output against the gold output based on the judges' criteria.
